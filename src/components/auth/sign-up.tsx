@@ -1,10 +1,10 @@
-import { LogoIcon } from "@/components/logo";
+import { LogoIcon } from "@/components/auth/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
-export default function SignUp() {
+export function SignUp() {
     return (
         <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
             <form
