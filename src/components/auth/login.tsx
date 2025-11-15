@@ -106,7 +106,7 @@ export function Login() {
                     <p className="text-accent-foreground text-center text-sm">
                         Don&apos;t have an account ?
                         <Button asChild variant="link" className="px-2">
-                            <Link href="/signup">Create account</Link>
+                            <Link href="/auth/signup">Create account</Link>
                         </Button>
                     </p>
                 </div>

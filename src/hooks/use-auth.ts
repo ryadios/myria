@@ -87,7 +87,7 @@ export const useAuth = () => {
         setIsLoading(true);
         try {
             await signOut();
-            router.push("/login");
+            router.push("/auth/login");
         } catch (err) {
             console.error(err);
         } finally {
