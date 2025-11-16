@@ -18,7 +18,7 @@ export default convexAuthNextjsMiddleware(
         }
 
         if (ProtectedMatcher(req) && !authed) {
-            return nextjsMiddlewareRedirect(req, "/login");
+            return nextjsMiddlewareRedirect(req, "/auth/login");
         }
 
         return;

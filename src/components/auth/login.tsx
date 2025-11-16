@@ -22,6 +22,7 @@ export function Login() {
             <form
                 onSubmit={handleSubmit(handleSignIn)}
                 className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]"
+                noValidate
             >
                 <div className="bg-card -m-px rounded-[calc(var(--radius)+.125rem)] border p-8 pb-6">
                     <div className="text-center">
@@ -44,7 +45,7 @@ export function Login() {
                                 {...register("email")}
                                 className={errors.email && "border-destructive"}
                             />
-                            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+                            {errors.email && <p className="text-xs text-destructive mt-0.5">{errors.email.message}</p>}
                         </div>
 
                         <div className="space-y-0.5">
@@ -65,7 +66,9 @@ export function Login() {
                                 {...register("password")}
                                 className={cn("input sz-md variant-mixed", errors.password && "border-destructive")}
                             />
-                            {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+                            {errors.password && (
+                                <p className="text-xs text-destructive mt-0.5">{errors.password.message}</p>
+                            )}
                         </div>
 
                         {errors.root && <p className="text-xs text-destructive text-center">{errors.root.message}</p>}
