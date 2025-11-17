@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
 import { Google } from "./google";
 
@@ -76,7 +76,7 @@ export function Login() {
                         <Button className="w-full" disabled={isLoading} type="submit">
                             {isLoading ? (
                                 <>
-                                    <Loader2 className="mr-2 size-4 animate-spin" />
+                                    <Loader2Icon className="mr-2 size-4 animate-spin" />
                                     Signing In...
                                 </>
                             ) : (

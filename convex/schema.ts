@@ -42,7 +42,7 @@ const schema = defineSchema({
         .index("by_idempotencyKey", ["idempotencyKey"]),
     projects: defineTable({
         userId: v.id("users"),
-        title: v.string(),
+        name: v.string(),
         description: v.optional(v.string()),
         styleGuide: v.optional(v.string()),
         sketchesData: v.any(),
