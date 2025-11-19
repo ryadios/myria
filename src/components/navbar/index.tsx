@@ -11,7 +11,8 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { useAppSelector } from "@/redux/store";
-import { CreateProject } from "../project/create-project";
+import { CreateProject } from "../buttons/project/create-project";
+import Autosave from "../canvas/autosave";
 
 type TabProps = { label: string; href: string; icon?: React.ReactNode };
 
@@ -63,7 +64,7 @@ export default function Navbar() {
                             href={t.href}
                             className={cn(
                                 "group inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition",
-                                `${pathname}?projects=${projectId}` === t.href
+                                `${pathname}?project=${projectId}` === t.href
                                     ? "bg-white/12 text-white-border border-white/16 backdrop-blur-sm"
                                     : "text-zinc-400 hover:text-zinc-200 hover:bg-white/6 border border-transparent"
                             )}
@@ -96,6 +97,7 @@ export default function Navbar() {
                         <UserIcon className="size-5 text-black" />
                     </AvatarFallback>
                 </Avatar>
+                {hasCanvas && <Autosave />}
                 {!hasCanvas && !hasStyleGuide && <CreateProject />}
             </div>
         </div>

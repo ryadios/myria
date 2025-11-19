@@ -35,3 +35,5 @@ export const ProjectApi = createApi({
         }),
     }),
 });
+
+export const { useAutoSaveProjectMutation } = ProjectApi;

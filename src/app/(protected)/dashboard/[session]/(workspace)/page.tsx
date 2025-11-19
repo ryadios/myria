@@ -1,9 +1,9 @@
 import ProjectsList from "@/components/projects/list";
 import ProjectsProvider from "@/components/projects/list/provider";
-import { ProjectQuery } from "@/convex/query.config";
+import { ProjectsQuery } from "@/convex/query.config";
 
 export default async function Page() {
-    const { projects, profile } = await ProjectQuery();
+    const { projects, profile } = await ProjectsQuery();
 
     if (!profile) {
         <div className="contianer mx-auto py-8">

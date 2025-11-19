@@ -11,8 +11,6 @@ export default function ProjectsList() {
     const { projects, canCreate } = useProjectCreation();
     const user = useAppSelector((state) => state.profile);
 
-    console.log(projects); // LOGS
-
     if (!canCreate) {
         return (
             <div className="text-center py-12">

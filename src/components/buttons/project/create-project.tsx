@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2Icon, PlusIcon } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { useProjectCreation } from "@/hooks/use-project";
 
 export function CreateProject() {
