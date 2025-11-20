@@ -23,7 +23,7 @@ export default function Page() {
         if (me === undefined) return;
 
         if (me === null) {
-            redirected.current = false;
+            redirected.current = true;
             router.replace("/auth/login");
             return;
         }

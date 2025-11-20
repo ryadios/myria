@@ -4,7 +4,7 @@ export interface PolarWebhookEvent<TData = unknown> {
     data: TData;
 }
 
-export type ReceievedEvent = PolarWebhookEvent<unknown>;
+export type ReceivedEvent = PolarWebhookEvent<unknown>;
 
 export const isPolarWebhookEvent = (x: unknown): x is PolarWebhookEvent<unknown> => {
     return (

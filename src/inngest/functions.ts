@@ -8,7 +8,7 @@ import {
     isPolarWebhookEvent,
     PolarOrder,
     PolarSubscription,
-    ReceievedEvent,
+    ReceivedEvent,
     toMs,
 } from "@/types/polar";
 import { Id } from "../../convex/_generated/dataModel";
@@ -44,7 +44,7 @@ export const handlePolarEvent = inngest.createFunction(
 
         if (!isPolarWebhookEvent(event.data)) return;
 
-        const incoming = event.data as ReceievedEvent;
+        const incoming = event.data as ReceivedEvent;
         const { type, data: dataUnknown } = incoming;
 
         const sub: PolarSubscription | null = extractSubscriptionLike(dataUnknown);
@@ -182,7 +182,7 @@ export const handlePolarEvent = inngest.createFunction(
         console.log("🔑 [Inngest] Idempotency key:", idk);
 
         /* allow on first known period */
-        if (entitled && (looksCreate || looksRenew || true)) {
+        if (entitled && (looksCreate || looksRenew)) {
             const grant = await step.run("grant-credits", async () => {
                 try {
                     console.log("📄 [Inngest] Granting credits to subscription:", subscriptionId);

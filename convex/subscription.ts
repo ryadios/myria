@@ -94,7 +94,7 @@ export const upsertFromPolar = mutation({
 
         // --- Duplicate warning ---
         if (existingByPolar && existingByUser && existingByPolar._id !== existingByUser._id) {
-            console.warn("⚠️ [Inngest] DUPLICATE DETECTED: User has different subscription by Polar ID vs User ID!");
+            console.warn("⚠️ [Convex] DUPLICATE DETECTED: User has different subscription by Polar ID vs User ID!");
             console.warn(" - By Polar ID:", existingByPolar._id);
             console.warn(" - By User ID:", existingByUser._id);
         }
@@ -136,23 +136,18 @@ export const upsertFromPolar = mutation({
                 await ctx.db.patch(existingByPolar._id, base);
                 return existingByPolar._id;
             } else {
-                const userExistingSubscription = await ctx.db
-                    .query("subscriptions")
-                    .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-                    .first();
-
-                if (userExistingSubscription) {
+                if (existingByUser) {
                     const preservedData = {
-                        creditsBalance: userExistingSubscription.creditsBalance,
-                        lastGrantCursor: userExistingSubscription.lastGrantCursor,
+                        creditsBalance: existingByUser.creditsBalance,
+                        lastGrantCursor: existingByUser.lastGrantCursor,
                     };
 
-                    await ctx.db.patch(userExistingSubscription._id, {
+                    await ctx.db.patch(existingByUser._id, {
                         ...base,
                         ...preservedData,
                     });
 
-                    return userExistingSubscription._id;
+                    return existingByUser._id;
                 } else {
                     const newId = await ctx.db.insert("subscriptions", {
                         ...base,

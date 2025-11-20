@@ -55,7 +55,7 @@ export default function Page() {
                         </div>
                         <div className="space-y-3">
                             <h3 className="text-base font-semibold text-foreground text-center mb-3">
-                                Who&apos;s Included
+                                What&apos;s Included
                             </h3>
                             <div className="grid gap-2">
                                 <div className="flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-white/8">

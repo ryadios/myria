@@ -89,7 +89,9 @@ export default function Navbar() {
                 </div>
             </div>
             <div className="flex items-center gap-4 justify-end">
-                <span className="text-sm text-white/50">{creditBalance} credits</span>
+                <span className="text-sm text-white/50">
+                    {creditBalance !== undefined ? `${creditBalance} credits` : "Loading..."}
+                </span>
                 <Button
                     variant="secondary"
                     className="rounded-full size-12 flex items-center justify-center backdrop-blur-xl bg-white/8 border border-white/12 saturate-150 hover:bg-white/12"
