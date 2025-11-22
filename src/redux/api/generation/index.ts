@@ -9,7 +9,7 @@ export const GenerationApi = createApi({
     endpoints: (builder) => ({
         generateGeneration: builder.mutation({
             query: (data) => ({
-                url: "/generate",
+                url: "/",
                 method: "POST",
                 body: data,
             }),

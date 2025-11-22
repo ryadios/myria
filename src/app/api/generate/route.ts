@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
         const projectId = formData.get("projectId") as string;
 
         if (!imageFile) return NextResponse.json({ error: "No image file provided" }, { status: 400 });
+        if (!projectId) return NextResponse.json({ error: "No projectId provided" }, { status: 400 });
 
         if (!imageFile.type.startsWith("image/"))
             return NextResponse.json({ error: "Invalid file type. Only images are allowed" }, { status: 400 });
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
 
         if (!balanceOk) return NextResponse.json({ error: "Failed to get balance" }, { status: 500 });
 
-        if (balanceBalance === 0) return NextResponse.json({ error: "No credits available", status: 400 });
+        if (balanceBalance === 0) return NextResponse.json({ error: "No credits available" }, { status: 400 });
 
         const { ok } = await ConsumeCreditsQuery({ amount: 1 });
 

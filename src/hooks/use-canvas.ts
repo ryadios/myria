@@ -1077,7 +1077,9 @@ export const useWorkflowGeneration = () => {
             if (successCount === 4) {
                 toast.success("✨ All 4 workflow pages generated successfully!", { id: "workflow-generation" });
             } else if (successCount > 0) {
-                toast.success("", { id: "workflow-generation" });
+                toast.success(`Generated ${successCount} of ${results.length} workflow pages`, {
+                    id: "workflow-generation",
+                });
                 if (failureCount > 0) toast.error(`Failed to generate ${failureCount} workflow pages`);
             } else {
                 toast.error("Failed to generate workflow pages", { id: "workflow-generation" });

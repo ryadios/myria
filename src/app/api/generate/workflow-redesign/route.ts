@@ -201,7 +201,7 @@ Please generate the modified version of the provided workflow page HTML with the
         console.error("Workflow generation API error:", error);
         return NextResponse.json(
             {
-                error: "Failed to proccess workflow generation request",
+                error: "Failed to process workflow generation request",
                 details: error instanceof Error ? error.message : "Unknown Error",
             },
             { status: 500 }

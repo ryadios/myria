@@ -15,10 +15,10 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { userMessage, generatedUIId, currentHTML, wireframeSnapshot, projectId } = body;
 
-        if (!generatedUIId || !currentHTML || !projectId) {
+        if (!userMessage || !generatedUIId || !currentHTML || !projectId) {
             return NextResponse.json(
                 {
-                    error: "Missing required fields: userMessage, generatedUIId, currentHTML, wireframeSnapshot projectId",
+                    error: "Missing required fields: userMessage, generatedUIId, currentHTML, projectId",
                 },
                 { status: 400 }
             );
@@ -130,10 +130,14 @@ export async function POST(request: NextRequest) {
                             type: "text",
                             text: userPrompt,
                         },
-                        {
-                            type: "image",
-                            image: wireframeSnapshot,
-                        },
+                        ...(wireframeSnapshot
+                            ? [
+                                  {
+                                      type: "image" as const,
+                                      image: wireframeSnapshot,
+                                  },
+                              ]
+                            : []),
                         ...imageUrls.map((url) => ({
                             type: "image" as const,
                             image: url,
@@ -170,7 +174,7 @@ export async function POST(request: NextRequest) {
         console.error("Workflow generation API error:", error);
         return NextResponse.json(
             {
-                error: "Failed to proccess workflow generation request",
+                error: "Failed to process workflow generation request",
                 details: error instanceof Error ? error.message : "Unknown Error",
             },
             { status: 500 }

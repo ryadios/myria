@@ -255,7 +255,7 @@ export default function InspirationSidebar({ isOpen, onClose }: InspirationSideb
                     <p className="text-sm text-white/60">
                         {images.length < 6 ? (
                             <>
-                                Drop images here or <span className="text-blue-400">browser</span>
+                                Drop images here or <span className="text-blue-400">browse</span>
                                 <br />
                                 <span className="text-xs text-white/40">{images.length}/6 images uploaded</span>
                             </>

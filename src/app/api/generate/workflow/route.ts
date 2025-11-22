@@ -24,16 +24,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Check credits (workflow generation consumes 1 credit)
-        const { ok: balanceOk, balance: balanceBalance } = await CreditsBalanceQuery();
-        if (!balanceOk || balanceBalance === 0) {
-            return NextResponse.json({ error: "No credits available" }, { status: 400 });
-        }
-
-        // Consume credits
+        // Atomically check and consume credits
         const { ok } = await ConsumeCreditsQuery({ amount: 1 });
         if (!ok) {
-            return NextResponse.json({ error: "Failed to consume credits" }, { status: 500 });
+            return NextResponse.json({ error: "No credits available or failed to consume" }, { status: 400 });
         }
 
         // Get project ID from request body for style guide
