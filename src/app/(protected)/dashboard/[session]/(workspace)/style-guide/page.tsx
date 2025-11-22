@@ -20,7 +20,10 @@ export default async function Page({ searchParams }: Props) {
 
     const guide = existingStyleGuide.styleGuide?._valueJSON as unknown as StyleGuide;
 
-    const colorGuide = guide?.colorSections || mockStyleGuide.colorSections;
+    const rawColorGuide = guide?.colorSections || mockStyleGuide.colorSections;
+
+    const colorGuide = Array.isArray(rawColorGuide) ? rawColorGuide : Object.values(rawColorGuide);
+
     const typographyGuide = guide?.typographySections || [];
 
     const existingMoodBoardImages = await MoodBoardImagesQuery(projectId);
@@ -29,7 +32,7 @@ export default async function Page({ searchParams }: Props) {
     return (
         <div>
             <TabsContent value="colors" className="space-y-8">
-                {!guideImages.length ? (
+                {!colorGuide.length ? (
                     <div className="space-y-8">
                         <div className="text-center py-20">
                             <div className="size-16 mx-auto mb-4 rounded-lg bg-muted flex items-center justify-center">

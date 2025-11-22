@@ -5,7 +5,7 @@ import React from "react";
 const tabs = [
     {
         value: "colors",
-        label: "colors",
+        label: "Colors",
         icon: HashIcon,
     },
     {
@@ -32,14 +32,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                 Manage your style guide for your project.
                             </p>
                         </div>
-                        <TabsList className="grid w-full sm:w-fit h-auto grid-cols-3 rounded-full backdrop-blur-xl bg-white/8 border border-white/12 saturate-150 p-2">
+                        <TabsList className="flex w-full sm:w-fit h-auto gap-2 rounded-full backdrop-blur-xl bg-white/8 border border-white/12 saturate-150 p-2">
                             {tabs.map((tab) => {
                                 const Icon = tab.icon;
                                 return (
                                     <TabsTrigger
                                         key={tab.value}
                                         value={tab.value}
-                                        className="flex items-center gap-2 rounded-xl data-[state=active]:bg-white/15 data-[state=active]:backdrop-blur-xl data-[state=active]:border data-[state=active]:border-white/2 transition-all duration-200 text-xs sm:text-sm"
+                                        className="flex items-center gap-2 rounded-xl data-[state=active]:bg-white/15 data-[state=active]:backdrop-blur-xl data-[state=active]:border data-[state=active]:border-white/2 transition-all duration-200 text-xs sm:text-sm w-full px-4"
                                     >
                                         <Icon className="size-4" />
                                         <span className="hidden sm:inline">{tab.label}</span>

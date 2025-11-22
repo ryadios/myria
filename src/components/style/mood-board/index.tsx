@@ -6,6 +6,8 @@ import ImageBoard from "./images.board";
 import { UploadIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import GenerateStyleGuideButton from "@/components/buttons/style-guide";
 
 type Props = {
     guideImages: MoodBoardImage[];
@@ -14,6 +16,9 @@ type Props = {
 export default function Moodboard({ guideImages }: Props) {
     const { images, dragActive, removeImage, handleDrag, handleDrop, handleFileInput, canAddMore } =
         useMoodBoard(guideImages);
+
+    const searchParams = useSearchParams();
+    const projectId = searchParams.get("project");
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const handleUploadClick = () => {
@@ -144,8 +149,7 @@ export default function Moodboard({ guideImages }: Props) {
                 />
             </div>
 
-            {/* TODO: Add AI generation */}
-            <Button className="w-fit">Generate with AI</Button>
+            <GenerateStyleGuideButton images={images} fileInputRef={fileInputRef} projectId={projectId ?? ""} />
 
             {images.length >= 5 && (
                 <div className="text-center p-4 bg-muted/50 rounded-2xl">
