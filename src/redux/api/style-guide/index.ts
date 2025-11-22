@@ -49,7 +49,7 @@ export interface GenerateStyleGuideResponse {
     message: string;
 }
 
-export const styleGuideApi = createApi({
+export const StyleGuideApi = createApi({
     reducerPath: "styleGuideApi",
     baseQuery: fetchBaseQuery({
         baseUrl: "/api/generate",
@@ -71,4 +71,4 @@ export const styleGuideApi = createApi({
     }),
 });
 
-export const { useGenerateStyleGuideMutation } = styleGuideApi;
+export const { useGenerateStyleGuideMutation } = StyleGuideApi;

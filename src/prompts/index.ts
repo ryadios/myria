@@ -285,6 +285,7 @@ Images: id="hero-image", id="product-image-1"
 
 
 Critical Don'ts
+❌ NEVER output markdown fences, code blocks, backticks, or \`\`\`html. Output raw HTML only.
 ❌ Never render wireframe labels as actual UI text
 ❌ Never add sections not shown in wireframe
 ❌ Never use Tailwind color classes
@@ -330,6 +331,7 @@ ID VERIFICATION:
 ✅ All sections have section-type IDs (hero-section, about-section, etc.)
 Output Format
 Return ONLY the HTML wrapped in <div data-generated-ui>. No explanations, no comments, no additional text.
+
     `,
     },
 };

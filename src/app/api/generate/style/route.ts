@@ -4,7 +4,6 @@ import { MoodBoardImage } from "@/hooks/use-styles";
 import { prompts } from "@/prompts";
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
-import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { fetchMutation } from "convex/nextjs";
 import { api } from "../../../../../convex/_generated/api";

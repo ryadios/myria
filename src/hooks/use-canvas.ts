@@ -1,9 +1,11 @@
 import { downloadBlob, generateFrameSnapshot } from "@/lib/frame-snapshot";
+import { useGenerateWorkflowMutation } from "@/redux/api/generation";
 import {
     addArrow,
     addEllipse,
     addFrame,
     addFreeDrawShape,
+    addGeneratedUI,
     addLine,
     addRect,
     addText,
@@ -27,9 +29,11 @@ import {
     wheelPan,
     wheelZoom,
 } from "@/redux/slice/viewport";
-import { AppDispatch, useAppSelector } from "@/redux/store";
+import { AppDispatch, useAppDispatch, useAppSelector } from "@/redux/store";
+import { nanoid } from "@reduxjs/toolkit";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
 interface TouchPointer {
     id: number;
@@ -842,6 +846,7 @@ export const useInfiniteCanvas = () => {
 };
 
 export const useFrame = (shape: FrameShape) => {
+    const dispatch = useAppDispatch();
     const [isGenerating, setIsGenerating] = useState(false);
 
     const allShapes = useAppSelector((state) =>
@@ -853,7 +858,7 @@ export const useFrame = (shape: FrameShape) => {
             setIsGenerating(true);
             const snapshot = await generateFrameSnapshot(shape, allShapes);
 
-            downloadBlob(snapshot, `frame-${shape.frameNumber}-snapshot.png`);
+            // downloadBlob(snapshot, `frame-${shape.frameNumber}-snapshot.png`);
 
             const formData = new FormData();
             formData.append("image", snapshot, `frame-${shape.frameNumber}.png`);
@@ -864,11 +869,240 @@ export const useFrame = (shape: FrameShape) => {
             if (projectId) {
                 formData.append("projectId", projectId);
             }
-        } catch (err) {}
+
+            const response = await fetch("/api/generate", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`API Request Failed: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+
+            const generatedUIPosition = {
+                x: shape.x + shape.w + 50, // 50px spacing from frame
+                y: shape.y,
+                w: Math.max(400, shape.w), // At least 400px wide, or frame width if larger
+                h: Math.max(300, shape.h), // At least 300px high, or frame height if larger
+            };
+
+            const generatedUUID = nanoid();
+
+            dispatch(
+                addGeneratedUI({
+                    ...generatedUIPosition,
+                    id: generatedUUID,
+                    uiSpecData: null, // Start with null for live rendering
+                    sourceFrameId: shape.id,
+                })
+            );
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let accumulatedMarkup = "";
+
+            let lastUpdateTime = 0;
+            const UPDATE_THROTTLE_MS = 200;
+
+            if (reader) {
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) {
+                            dispatch(
+                                updateShape({
+                                    id: generatedUUID,
+                                    patch: { uiSpecData: accumulatedMarkup },
+                                })
+                            );
+                            break;
+                        }
+
+                        const chunk = decoder.decode(value);
+                        accumulatedMarkup += chunk;
+
+                        const now = Date.now();
+                        if (now - lastUpdateTime >= UPDATE_THROTTLE_MS) {
+                            dispatch(
+                                updateShape({
+                                    id: generatedUUID,
+                                    patch: { uiSpecData: accumulatedMarkup },
+                                })
+                            );
+                            lastUpdateTime = now;
+                        }
+                    }
+                } finally {
+                    reader.releaseLock();
+                }
+            }
+        } catch (err) {
+            toast.error(`Failed to generate UI design: ${err instanceof Error ? err.message : "Unknown error"}`);
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     return {
         isGenerating,
         handleGenerateDesign,
+    };
+};
+
+export const useInspiration = () => {
+    const [isInspirationOpen, setIsInspirationOpen] = useState(false);
+
+    const toggleInspiration = () => {
+        setIsInspirationOpen(!isInspirationOpen);
+    };
+
+    const openInspiration = () => {
+        setIsInspirationOpen(true);
+    };
+
+    const closeInspiration = () => {
+        setIsInspirationOpen(false);
+    };
+
+    return {
+        isInspirationOpen,
+        toggleInspiration,
+        openInspiration,
+        closeInspiration,
+    };
+};
+
+export const useWorkflowGeneration = () => {
+    const dispatch = useAppDispatch();
+    const [, { isLoading: isGeneratingWorkflow }] = useGenerateWorkflowMutation();
+
+    const allShapes = useAppSelector((state) =>
+        Object.values(state.shapes.shapes?.entities || {}).filter((shape): shape is Shape => shape !== undefined)
+    );
+
+    const generateWorkflow = async (generatedUIId: string) => {
+        try {
+            const currentShape = allShapes.find((shape) => shape.id === generatedUIId);
+
+            if (!currentShape || currentShape.type !== "generatedui") {
+                toast.error("Generated UI not found");
+                return;
+            }
+
+            if (!currentShape.uiSpecData) {
+                toast.error("No design data to generate workflow from");
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get("project");
+
+            if (!projectId) {
+                toast.error("Project ID not found");
+                return;
+            }
+
+            const pageCount = 4;
+            toast.loading("Generating workflow pages...", { id: "workflow-generation" });
+
+            const baseX = currentShape.x + currentShape.w + 100;
+            const spacing = Math.max(currentShape.w + 50, 450);
+
+            const workflowPromises = Array.from({ length: pageCount }).map(async (_, index) => {
+                try {
+                    const response = await fetch("/api/generate/workflow", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            generatedUIId,
+                            currentHTML: currentShape.uiSpecData,
+                            projectId,
+                            pageIndex: index,
+                        }),
+                    });
+
+                    if (!response.ok) throw new Error(`Failed to generate page ${index + 1}: ${response.status}`);
+
+                    const workflowPosition = {
+                        x: baseX + index * spacing,
+                        y: currentShape.y,
+                        w: Math.max(400, currentShape.w),
+                        h: Math.max(300, currentShape.h),
+                    };
+
+                    const workflowId = nanoid();
+                    dispatch(
+                        addGeneratedUI({
+                            ...workflowPosition,
+                            id: workflowId,
+                            uiSpecData: null,
+                            sourceFrameId: currentShape.sourceFrameId,
+                            isWorkflowPage: true,
+                        })
+                    );
+
+                    const reader = response.body?.getReader();
+                    const decoder = new TextDecoder();
+                    let accumulatedHTML = "";
+
+                    if (reader) {
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+
+                            const chunk = decoder.decode(value);
+                            accumulatedHTML += chunk;
+
+                            // Update the workflow page with streamed HTML
+                            dispatch(
+                                updateShape({
+                                    id: workflowId,
+                                    patch: { uiSpecData: accumulatedHTML },
+                                })
+                            );
+                        }
+                    }
+
+                    return { pageIndex: index, success: true };
+                } catch (error) {
+                    console.error(`Error generating page ${index + 1}: ${error}`);
+                    return { pageIndex: index, success: false, error };
+                }
+            });
+
+            const results = await Promise.all(workflowPromises);
+            const successCount = results.filter((r) => r.success).length;
+            const failureCount = results.length - successCount;
+            if (successCount === 4) {
+                toast.success("✨ All 4 workflow pages generated successfully!", { id: "workflow-generation" });
+            } else if (successCount > 0) {
+                toast.success("", { id: "workflow-generation" });
+                if (failureCount > 0) toast.error(`Failed to generate ${failureCount} workflow pages`);
+            } else {
+                toast.error("Failed to generate workflow pages", { id: "workflow-generation" });
+            }
+        } catch (error) {
+            console.error("Workflow generation error:", error);
+            toast.error("Failed to generate workflow pages", { id: "workflow-generation" });
+        }
+    };
+
+    return {
+        generateWorkflow,
+        isGeneratingWorkflow,
+    };
+};
+
+export const useGlobalChat = () => {
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [activeGeneratedUIId, setActiveGeneratedUIId] = useState<string | null>(null);
+
+    const { generateWorkflow } = useWorkflowGeneration();
+
+    return {
+        isChatOpen,
+        activeGeneratedUIId,
+        generateWorkflow,
     };
 };

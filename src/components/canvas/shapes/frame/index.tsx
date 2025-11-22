@@ -1,6 +1,6 @@
 import { FrameShape } from "@/redux/slice/shapes";
 import { LiquidGlassButton } from "@/components/buttons/liquid-glass";
-import { Brush, Palette } from "lucide-react";
+import { Brush, Loader2Icon, Palette } from "lucide-react";
 import { useFrame } from "@/hooks/use-canvas";
 
 export const Frame = ({ shape, toggleInspiration }: { shape: FrameShape; toggleInspiration: () => void }) => {
@@ -9,7 +9,7 @@ export const Frame = ({ shape, toggleInspiration }: { shape: FrameShape; toggleI
     return (
         <>
             <div
-                className="absolute pointer-events-none backdrop-blur-xl bg-white/[0.08] border border-white/[0.12] saturate-150"
+                className="absolute pointer-events-none backdrop-blur-xl bg-white/8 border border-white/12 saturate-150"
                 style={{
                     left: shape.x,
                     top: shape.y,
@@ -57,8 +57,17 @@ export const Frame = ({ shape, toggleInspiration }: { shape: FrameShape; toggleI
                     className={isGenerating ? "animate-pulse" : ""}
                     style={{ pointerEvents: "auto" }}
                 >
-                    <Brush size={12} className={isGenerating ? "animate-spin" : ""} />
-                    {isGenerating ? "Generating..." : "Generate Design"}
+                    {isGenerating ? (
+                        <>
+                            <Loader2Icon size={12} className="animate-spin" />
+                            Generating...
+                        </>
+                    ) : (
+                        <>
+                            <Brush size={12} />
+                            Generate Design
+                        </>
+                    )}
                 </LiquidGlassButton>
             </div>
         </>

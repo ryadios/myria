@@ -2,12 +2,14 @@
 
 import { useMutation } from "convex/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { api } from "../../convex/_generated/api";
 import { toast } from "sonner";
 import { Id } from "../../convex/_generated/dataModel";
 import { useGenerateStyleGuideMutation } from "@/redux/api/style-guide";
+import { GeneratedUIShape, updateShape } from "@/redux/slice/shapes";
+import { useAppDispatch } from "@/redux/store";
 
 export interface MoodBoardImage {
     id: string;
@@ -337,4 +339,42 @@ export const useStyleGuide = (
         handleUploadClick,
         isGenerating,
     };
+};
+
+export const useUpdateContainer = (shape: GeneratedUIShape) => {
+    const dispatch = useAppDispatch();
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (containerRef.current && shape.uiSpecData) {
+            const timeoutId = setTimeout(() => {
+                const actualHeight = containerRef.current?.offsetHeight || 0;
+
+                if (actualHeight > 0 && Math.abs(actualHeight - shape.h) > 10) {
+                    dispatch(
+                        updateShape({
+                            id: shape.id,
+                            patch: { h: actualHeight },
+                        })
+                    );
+                }
+            }, 100);
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [shape.uiSpecData, shape.id, shape.h, dispatch]);
+
+    // Enhanced HTML sanitization function for basic safety
+    const sanitizeHtml = (html: string) => {
+        const sanitized = html
+            .replace(/<script\b[^<]*(?:(?!<\/script>)[^<]*)*<\/script>/gi, "")
+            .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)[^<]*)*<\/iframe>/gi, "")
+            .replace(/on\w+="[^"]*"/gi, "") // Remove event handlers
+            .replace(/javascript:/gi, "") // Remove javascript: protocols
+            .replace(/data:/gi, ""); // Remove data: protocols for safety
+
+        return sanitized;
+    };
+
+    return { sanitizeHtml, containerRef };
 };

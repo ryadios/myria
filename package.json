@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.40",
-    "@ai-sdk/openai": "^2.0.71",
     "@auth/core": "^0.37.0",
     "@convex-dev/auth": "^0.0.90",
     "@hookform/resolvers": "^5.2.2",
